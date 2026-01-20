@@ -1,2 +1,12 @@
+fastapi
+uvicorn
+requests
+numpy
+opencv-python
+pillow
+pytesseract
+easyocr
+ultralytics
+torch
 ultralytics
 opencv-python
