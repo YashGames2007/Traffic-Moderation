@@ -1,11 +1,11 @@
 import numpy as np
 import cv2
 import os
-import easyocr
+from pipeline.ocr_util import anpr_ocr
 
 
 # Initialize EasyOCR reader ONCE (important for performance)
-reader = easyocr.Reader(['en'], gpu=False)
+# reader = easyocr.Reader(['en'], gpu=False)
 
 
 def detect_by_img_processing(
@@ -113,17 +113,20 @@ def detect_by_img_processing(
         # -----------------------------
         # EasyOCR
         # -----------------------------
-        results = reader.readtext(
-            clean_plate,
-            detail=0,
-            allowlist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        )
+        # results = reader.readtext(
+        #     clean_plate,
+        #     detail=0,
+        #     allowlist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        # )
 
-        if not results:
+        # if not results:
+        #     continue
+
+        # text = results[0].strip()
+        text = anpr_ocr(clean_plate)
+
+        if not text:
             continue
-
-        text = results[0].strip()
-
         # -----------------------------
         # SAVE FINAL PLATE IMAGE
         # -----------------------------

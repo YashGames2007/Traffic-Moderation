@@ -1,12 +1,11 @@
 import cv2
 from ultralytics import YOLO
-import easyocr
+from pipeline.ocr_util import anpr_ocr
 import re
 import os
 import uuid
 
 model = YOLO("model/best.pt")
-reader = easyocr.Reader(['en'], gpu=False)
 
 DEFAULT_OUTPUT_DIR = "output"
 
@@ -40,10 +39,10 @@ def detect_by_model(img, output_path=None):
             x1, y1, x2, y2 = map(int, box.xyxy[0])
 
             crop = img[y1:y2, x1:x2]
-            text = reader.readtext(crop, detail=0)
-            raw_text = " ".join(text)
+            plate = anpr_ocr(crop)
+            # raw_text = " ".join(text)
 
-            plate = re.sub(r'[^A-Z0-9]', '', raw_text.upper())
+            # plate = re.sub(r'[^A-Z0-9]', '', raw_text.upper())
             if plate:
                 plates.append(plate)
 

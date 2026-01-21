@@ -4,7 +4,7 @@ requests
 numpy
 opencv-python
 pillow
-pytesseract
+paddleocr
 easyocr
 ultralytics
 torch
