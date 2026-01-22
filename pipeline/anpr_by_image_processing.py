@@ -107,6 +107,7 @@ def detect_by_img_processing(
             continue
 
         clean_plate = clean2_plate(plate_candidate)
+        # print("Clean Plate:" )
         if clean_plate is None:
             continue
 
@@ -122,11 +123,6 @@ def detect_by_img_processing(
         # if not results:
         #     continue
 
-        # text = results[0].strip()
-        text = anpr_ocr(clean_plate)
-
-        if not text:
-            continue
         # -----------------------------
         # SAVE FINAL PLATE IMAGE
         # -----------------------------
@@ -135,7 +131,11 @@ def detect_by_img_processing(
             output_dir, f"anpr_ip_{frame_id}_plate.jpg"
         )
         cv2.imwrite(plate_path, clean_plate)
+        # text = results[0].strip()
+        text = anpr_ocr(clean_plate)
 
+        if not text:
+            continue
         return text
 
     return None

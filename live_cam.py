@@ -1,4 +1,6 @@
 import cv2
+import os
+os.environ["DISABLE_MODEL_SOURCE_CHECK"] = "True"
 from pipeline.anpr_pipeline import start_pipeline, dispatch_frame
 
 # ===============================
