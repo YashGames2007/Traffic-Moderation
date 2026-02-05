@@ -1,12 +1,32 @@
-fastapi
-uvicorn
-requests
-numpy
-opencv-python
-pillow
-paddleocr
-easyocr
-ultralytics
-torch
-ultralytics
-opencv-python
+# Requires Python 3.8.10
+
+# Core runtime
+numpy==1.23.5
+Pillow==10.4.0
+ultralytics==8.4.11
+
+# Easy
+easyocr==1.7.2
+
+# Paddle
+paddlepaddle==2.6.2
+paddleocr==2.5.0
+
+# OpenCV (exact versions required by PaddleOCR 2.5)
+opencv-python==4.6.0.66
+opencv-contrib-python==4.4.0.46
+
+# Image / OCR utilities
+scikit-image==0.21.0
+imgaug==0.4.0
+lmdb==1.7.5
+lxml==6.0.2
+
+# Text / HTML / misc deps required by paddleocr 2.5
+attrdict==2.0.1
+cython==3.2.4
+premailer==3.10.0
+python-Levenshtein==0.25.1
+rapidfuzz==3.9.7
+cssutils==2.11.1
+cssselect==1.2.0

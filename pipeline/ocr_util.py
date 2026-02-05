@@ -10,9 +10,10 @@ from paddleocr import PaddleOCR
 easy_reader = easyocr.Reader(['en'], gpu=False)
 
 paddle_reader = PaddleOCR(
-    use_angle_cls=True,
     lang='en',
-    # show_log=False
+    use_angle_cls=False,
+    enable_mkldnn=False,
+    show_log=False
 )
 
 # -----------------------------
@@ -68,7 +69,7 @@ def preprocess_plate(img):
 def normalize_text(text):
     text = text.upper()
     text = re.sub(r'[^A-Z0-9]', '', text)
-    print(f"Before Correction: {text}")
+    # print(f"Before Correction: {text}")
     corrected = ''
     for i, ch in enumerate(text):
         if i in [2, 3, 6, 7, 8, 9] and ch in CHAR_CORRECTIONS: # Digit Places in Number Plate
@@ -77,7 +78,7 @@ def normalize_text(text):
                 corrected += DIGIT_CORRECTIONS[ch]
         else:
             corrected += ch
-    print(f"After Correction: {corrected}")
+    # print(f"After Correction: {corrected}")
     return corrected
 
 # -----------------------------
@@ -110,6 +111,7 @@ def ocr_easy(img):
     if not results:
         return None
     return results[0]
+    # return "EASY"
 
 # -----------------------------
 # PaddleOCR
@@ -119,29 +121,23 @@ def ocr_paddle(img):
         return None
 
     try:
-        results = paddle_reader.predict(img)
+        results = paddle_reader.ocr(img)
     except Exception as e:
-        # print("[PaddleOCR ERROR]", e)
+        print("[PaddleOCR ERROR]", e)
         return None
 
     if not results or not isinstance(results, list):
+        # print("Not List")
         return None
 
     texts = []
+    # print(results)
 
     for block in results:
-        if not block:
-            continue
-
         for line in block:
-            # line must be: [bbox, (text, confidence)]
-            if (
-                isinstance(line, (list, tuple)) and
-                len(line) >= 2 and
-                isinstance(line[1], (list, tuple)) and
-                len(line[1]) >= 1
-            ):
-                text = line[1][0]
+            # line = (text, confidence)
+            if isinstance(line, (list, tuple)) and len(line) >= 1:
+                text = line[0]
                 if isinstance(text, str):
                     texts.append(text)
 
@@ -169,17 +165,24 @@ def anpr_ocr(image):
     if easy_text:
         easy_text = normalize_text(easy_text)
         if not is_ambiguous(easy_text):
+            print("Not Calling Paddle...")
             return easy_text
-    if easy_text is None:
-        return easy_text  # Early Exit if no Numbers are detected
-    # print(f"Ambiguous Text by Easy OCR {easy_text}")
+    # if easy_text is None:
+    #     return easy_text  # Early Exit if no Numbers are detected
+    print(f"Ambiguous Text by Easy OCR {easy_text}")
     # -------- PaddleOCR fallback -------- (IF Inaccurate detection happened)
+    print("Running Paddle...")
     paddle_text = ocr_paddle(pre)
     if paddle_text:
         paddle_text = normalize_text(paddle_text)
         if is_valid_plate(paddle_text):
             return paddle_text
 
-    if is_valid_plate(easy_text):
-        return easy_text
+    # if is_valid_plate(easy_text):
+    #     return easy_text
     return None
+
+
+if __name__ == "__main__":
+    img = cv2.imread("frame1.jpg")
+    print(ocr_paddle(img))
